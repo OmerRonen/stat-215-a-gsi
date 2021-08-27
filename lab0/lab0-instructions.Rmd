@@ -130,8 +130,20 @@ lab0/
 ## Testing
 
 We will test the skeleton of your lab as well as whether your rmd files compiles, using the `test.sh` script.
-The testing will be on the scf computers,
-therefore if you wish to use any new R packages please ask for approval[here](https://docs.google.com/spreadsheets/d/1lyP3xHMZEGc9CFtqimRlsaiXc6RODkHj54WiD4BuLdY/edit?usp=sharing).
+The testing will include cloning to your repository (replacing USERNAME with your git account):
+```bash
+git clone https://github.com/USERNAME/stat-215-a.git
+```
+and running the command:
+```bash
+bash stat-215-a/lab0/test.sh stat-215-a/lab0
+```
+on the scf cluster (Error will be printed if found).
+
+### R packages
+
+If you wish to use any new R packages (this is anything that requires `install.packages`) please ask for approval [here](https://docs.google.com/spreadsheets/d/1lyP3xHMZEGc9CFtqimRlsaiXc6RODkHj54WiD4BuLdY/edit?usp=sharing).
+
 
 
 **Again, you do not have to complete this lab, but at the very minimum, you must push a blank lab0.Rmd and lab0.pdf file to GitHub, so I can make sure I can see your repository for future labs.**
