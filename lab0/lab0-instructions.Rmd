@@ -126,4 +126,12 @@ lab0/
   other/
 ```
 
+
+## Testing
+
+We will test the skeleton of your lab as well as whether your rmd files compiles, using the `test.sh` script.
+The testing will be on the scf computers,
+therefore if you wish to use any new R packages please ask for approval[here](https://docs.google.com/spreadsheets/d/1lyP3xHMZEGc9CFtqimRlsaiXc6RODkHj54WiD4BuLdY/edit?usp=sharing).
+
+
 **Again, you do not have to complete this lab, but at the very minimum, you must push a blank lab0.Rmd and lab0.pdf file to GitHub, so I can make sure I can see your repository for future labs.**
