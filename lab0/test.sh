@@ -23,12 +23,18 @@ fi
 export md_file=$base_pth/lab0.rmd
 export md_file_2=$base_pth/lab0.Rmd
 
-if check_file $md_file || check_file $md_file_2
+if check_file $md_file
   then
     :
   else
-    echo 'lab0 markdown file missing'
+    if check_file $md_file_2
+    then
+      export md_file=$md_file_2
+    else
+        echo 'lab0 markdown file missing'
+    fi
 fi
+
 export complie_file=$base_pth/rmd_compile.pdf
 Rscript -e "rmarkdown::render('$md_file', output_file ='$complie_file')" --verbose False &> $base_pth/tmp.txt
 if [ $? -eq 0 ]; then
