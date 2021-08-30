@@ -3,7 +3,7 @@ title: "Lab 0"
 author: |
   | Omer Ronen (based on materials by James Duncan, Tiffany Tang, Zoe Vernon, Rebecca Barter, Yuval
   | Benjamini, Jessica Li, Adam Bloniarz, and Ryan Giordano)
-date: "Due 9/3/2020"
+date: "Due 9/3/2021"
 output:
   pdf_document: default
 ---
@@ -65,13 +65,13 @@ This walkthrough will be a quick overview of important functions/tools that you 
 
 ## Loading the data
 
-1. If you have not set up your Github account (which is totally OK, as I will walk you through this process during the first lab section on August 28), download the `statecoord.txt` file from Bcourses.
+1. If you have not set up your Github account (which is totally OK, as I will walk you through this process during the first lab section on August 28), download the `stateCoord.txt` file from Bcourses.
 
-1. If you have already set up your Github account, clone my stat-215a-fall-2020 repo by typing in the terminal (`git clone https://github.com/jpdunc23/stat-215a-fall-2020`) to get the class materials and data for this lab. These will live in the `lab0/` folder. If you have already cloned this repo, you can instead just pull any changes from the stat-215a-fall-2020 github repo (`git pull`).
+1. If you have already set up your Github account, clone my stat-215-a-gsi repo by typing in the terminal (`git clone https://github.com/OmerRonen/stat-215-a-gsi`) to get the class materials and data for this lab. These will live in the `lab0/` folder. If you have already cloned this repo, you can instead just pull any changes from the stat-215-a-gsi github repo (`git pull`).
 
 1. Open RStudio and load the data USArrests in R (`data("USArrests")`).
 
-1. Load the `statecoord.txt` data file into R.
+1. Load the `stateCoord.txt` data file into R.
 
 1. Load in libraries from tidyverse via `library(tidyverse)`.
 
