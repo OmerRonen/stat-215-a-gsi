@@ -51,7 +51,7 @@ def clone_repo(git_user, local_directory):
 
 
 def test_lab(git_user, lab_number):
-    with tempfile.TemporaryDirectory(suffix=git_user) as d:
+    with tempfile.TemporaryDirectory(suffix=f"_{git_user}") as d:
         LOGGER.info(f"Testing {git_user}")
         clone_repo(git_user, d)
         # LOGGER.info(f"files are {os.listdir(d)}")
