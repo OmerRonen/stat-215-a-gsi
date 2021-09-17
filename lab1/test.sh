@@ -88,6 +88,7 @@ perform_check_file $base_pth/lab1_blind.pdf
 export complie_file=$base_pth/rmd_compile.pdf
 Rscript -e "rmarkdown::render('$md_file', output_file ='$complie_file')" --verbose False &> $base_pth/md_log.txt
 if [ $? -eq 0 ]; then
+    echo "Nice!"
     rm $base_pth/md_log.txt
     rm $complie_file
 else
