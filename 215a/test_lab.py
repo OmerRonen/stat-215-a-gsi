@@ -64,7 +64,7 @@ def test_lab(git_user, lab_number):
         if os.path.exists(data_dir):
             shutil.rmtree(data_dir, ignore_errors=True)
         shutil.copytree(_get_data_path(lab_number), data_dir)
-        subprocess.Popen(f"bash test.sh", cwd=lab_dir, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(f"bash test.sh .", cwd=lab_dir, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         LOGGER.info(f"dir is {os.listdir(lab_dir)}")
         if os.path.isfile(os.path.join(lab_dir, "md_log.txt")):
             LOGGER.warning(f"{git_user} failed the test!!!")
