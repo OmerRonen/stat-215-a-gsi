@@ -54,9 +54,9 @@ def test_lab(git_user, lab_number):
         LOGGER.info(f"Testing {git_user}")
         clone_repo(git_user, d)
         LOGGER.info(f"files are {os.listdir(d)}")
-        lab_dir = os.path.join(d, f"lab_{lab_number}")
+        lab_dir = os.path.join(d, f"lab{lab_number}")
 
-        shutil.copyfile(_get_test_script(lab_number), lab_dir)
+        shutil.copyfile(_get_test_script(lab_number), os.path.join(lab_dir, "test.sh"))
         data_dir = os.path.join(lab_dir, "data")
         if not os.path.exists(data_dir):
             os.mkdir(data_dir)
