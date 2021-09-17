@@ -53,8 +53,9 @@ def test_lab(git_user, lab_number):
     with tempfile.TemporaryDirectory(suffix=f"_{git_user}") as d:
         LOGGER.info(f"Testing {git_user}")
         clone_repo(git_user, d)
-        # LOGGER.info(f"files are {os.listdir(d)}")
+        LOGGER.info(f"files are {os.listdir(d)}")
         lab_dir = os.path.join(d, f"lab_{lab_number}")
+
         shutil.copyfile(_get_test_script(lab_number), os.path.join(lab_dir, "test.sh"))
         shutil.copytree(_get_data_path(lab_number), os.path.join(lab_dir, "data"))
         subprocess.Popen(f"bash test.sh", cwd=lab_dir, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
