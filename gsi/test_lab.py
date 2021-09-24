@@ -5,7 +5,9 @@ import tempfile
 import argparse
 import logging
 
-from utils import gsi_dir, clone_repo, REPOS, get_lab_repos
+import pandas as pd
+
+from .utils import gsi_dir, clone_repo, REPOS, get_lab_repos
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -46,15 +48,19 @@ def test_lab(git_user, lab_number):
         LOGGER.info(f"dir is {os.listdir(lab_dir)}")
         if os.path.isfile(os.path.join(lab_dir, "md_log.txt")):
             LOGGER.warning(f"{git_user} failed the test!!!")
+            return False
         else:
             LOGGER.info(f"{git_user} passed the test")
+            return True
 
 
 def main():
     args = _get_args()
     lab_number = args.lab_number
+    report = {}
     for student in get_lab_repos(lab_number):
-        test_lab(student, lab_number)
+        report[student] = test_lab(student, lab_number)
+    pd.DataFrame(report).to_csv(os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv"))
 
 
 if __name__ == '__main__':
