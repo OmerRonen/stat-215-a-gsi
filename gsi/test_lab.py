@@ -4,12 +4,12 @@ import os
 import tempfile
 import argparse
 import logging
+import time
 
 import pandas as pd
 
-from .utils import gsi_dir, clone_repo, REPOS, get_lab_repos
+from .utils import gsi_dir, clone_repo, REPOS, get_lab_repos, get_last_edit, DEADLINES
 
-logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
@@ -32,6 +32,8 @@ def _get_test_script(lab_number):
 def test_lab(git_user, lab_number):
     with tempfile.TemporaryDirectory(suffix=f"_{git_user}") as d:
         LOGGER.info(f"Testing {git_user}")
+        submission_time = get_last_edit(git_user, f"lab{lab_number}/lab{lab_number}.pdf")
+        on_time = time.localtime(submission_time) < DEADLINES.lab1
         clone_repo(git_user, d)
         LOGGER.info(f"files are {os.listdir(d)}")
         lab_dir = os.path.join(d, f"lab{lab_number}")
@@ -46,21 +48,18 @@ def test_lab(git_user, lab_number):
         shutil.copytree(_get_data_path(lab_number), data_dir)
         subprocess.run(f"bash test.sh .", cwd=lab_dir, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         LOGGER.info(f"dir is {os.listdir(lab_dir)}")
-        if os.path.isfile(os.path.join(lab_dir, "md_log.txt")):
-            LOGGER.warning(f"{git_user} failed the test!!!")
-            return False
-        else:
-            LOGGER.info(f"{git_user} passed the test")
-            return True
+        compiled = os.path.isfile(os.path.join(lab_dir, "md_log.txt"))
+        return {"test": compiled, "on time": on_time}
 
 
 def main():
     args = _get_args()
     lab_number = args.lab_number
     report = {}
-    for student in get_lab_repos(lab_number):
+    repos = get_lab_repos(lab_number)
+    for student in repos:
         report[student] = test_lab(student, lab_number)
-    pd.DataFrame(report).to_csv(os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv"))
+    pd.DataFrame(report).to_csv(os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv"), index=[0])
 
 
 if __name__ == '__main__':
