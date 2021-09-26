@@ -8,7 +8,7 @@ import time
 
 import pandas as pd
 
-from .utils import gsi_dir, clone_repo, REPOS, get_lab_repos, get_last_edit, DEADLINES
+from .utils import gsi_dir, clone_repo, get_lab_repos, get_last_edit, DEADLINES, get_repo
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 def _get_args():
     parser = argparse.ArgumentParser(description='Testing 215A labs')
     parser.add_argument('lab_number', type=int, help='lab number to test')
+    parser.add_argument('--code', action="store_true", help='if true we test code')
 
     args = parser.parse_args()
     return args
@@ -52,14 +53,54 @@ def test_lab(git_user, lab_number):
         return {"test": compiled, "on time": on_time}
 
 
+def _get_peer_review(git_user, lab_number):
+    data = pd.read_csv(os.path.join(gsi_dir, "gsi", f"pr_lab{lab_number}.csv"), index_col=0)
+    reviewers = data.iloc[:, 0]
+    r_1 = reviewers[data.iloc[:, 1] == git_user].iloc[0]
+    try:
+        r_2 = reviewers[data.iloc[:, 2] == git_user].iloc[0]
+        user_reviewers = [r_1, r_2]
+    except IndexError:
+        user_reviewers = [r_1]
+    reports = []
+    for i, r in enumerate(user_reviewers):
+        with tempfile.TemporaryDirectory() as d:
+            _ = get_repo(r_1, d)
+            peer_review_file = os.path.join(d, f"lab{lab_number}/peer_review/student_{i}/report.csv")
+            if os.path.isfile(peer_review_file):
+                with open(peer_review_file, encoding="utf8", errors='ignore') as f:
+                    pr_data = pd.read_csv(f)
+                reports.append(pr_data)
+
+    return pd.concat(reports, axis=0)
+
+
+def get_student_lab(git_user, lab_number):
+    user_path = os.path.join(gsi_dir, f"lab{lab_number}", "students_labs", git_user)
+    if not os.path.exists(user_path):
+        os.mkdir(user_path)
+    with tempfile.TemporaryDirectory() as d:
+        _ = get_repo(git_user=git_user, d=d)
+
+        report_file = os.path.join(d, f"lab{lab_number}/lab{lab_number}.pdf")
+        shutil.copyfile(report_file, os.path.join(user_path, f"lab{lab_number}.pdf"))
+    peer_review = _get_peer_review(git_user, lab_number)
+    peer_review.to_csv(os.path.join(user_path, "peer_review.csv"))
+
+
 def main():
     args = _get_args()
     lab_number = args.lab_number
+    test_code = args.code
     report = {}
     repos = get_lab_repos(lab_number)
     for student in repos:
-        report[student] = test_lab(student, lab_number)
-    pd.DataFrame(report).to_csv(os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv"), index=[0])
+        LOGGER.info(student)
+        if test_code:
+            report[student] = test_lab(student, lab_number)
+            pd.DataFrame(report).to_csv(os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv"), index=[0])
+        else:
+            get_student_lab(student, lab_number)
 
 
 if __name__ == '__main__':

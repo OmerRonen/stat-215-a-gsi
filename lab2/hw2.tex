@@ -1,0 +1,185 @@
+ted this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, 
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+
+% define math shortcuts
+\DeclareMathOperator{\x}{\mathbf{x}}
+\DeclareMathOperator{\y}{\mathbf{y}}
+\DeclareMathOperator{\uu}{\mathbf{u}}
+\DeclareMathOperator{\vv}{\mathbf{v}}
+\DeclareMathOperator{\rr}{\mathbf{r}}
+\DeclareMathOperator{\U}{\mathbf{U}}
+\DeclareMathOperator{\V}{\mathbf{V}}
+\DeclareMathOperator{\A}{\mathbf{A}}
+\DeclareMathOperator{\M}{\mathbf{M}}
+\DeclareMathOperator{\N}{\mathbf{N}}
+\DeclareMathOperator{\D}{\mathbf{D}}
+\DeclareMathOperator{\Q}{\mathbf{Q}}
+\DeclareMathOperator{\I}{\mathbf{I}}
+\DeclareMathOperator{\X}{\mathbf{X}}
+\DeclareMathOperator{\W}{\mathbf{W}}
+\DeclareMathOperator{\HH}{\mathbf{H}}
+\DeclareMathOperator{\R}{\mathbf{R}}
+\DeclareMathOperator{\real}{\mathbb{R}}
+\DeclareMathOperator{\Xhat}{\vphantom{\mathbf{X}} \smash[t]{\hat{\mathbf{X}}}}
+\DeclareMathOperator{\Xbar}{\vphantom{\mathbf{X}} \smash[t]{\bar{\mathbf{X}}}}
+\DeclareMathOperator{\bbeta}{\boldsymbol{\beta}}
+\DeclareMathOperator{\mmu}{\boldsymbol{\mu}}
+\DeclareMathOperator{\llambda}{\boldsymbol{\lambda}}
+\DeclareMathOperator{\Lam}{\boldsymbol{\Lambda}}
+\DeclareMathOperator{\Delt}{\boldsymbol{\Delta}}
+\DeclareMathOperator{\Sig}{\boldsymbol{\Sigma}}
+\DeclareMathOperator{\Thet}{\boldsymbol{\Theta}}
+\DeclareMathOperator*{\argmin}{\mathrm{argmin} ~ }
+\DeclareMathOperator*{\argmax}{\mathrm{argmax} ~ }
+\DeclareMathOperator{\Var}{\text{Var}}
+\newcommand{\norm}[1]{\lVert #1  \rVert}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\newlength{\lyxlabelwidth}      % auxiliary length 
+
+\@ifundefined{date}{}{\date{}}
+\makeatother
+
+\usepackage{babel}
+
+\setcounter{section}{-1}
+
+
+
+\begin{document}
+
+\title{Homework 2\linebreak{}
+Stat 215A, Fall 2021}
+\maketitle
+\begin{center}
+\textbf{Due:} push a \texttt{homework2.pdf} file to your \texttt{stat-215-a} GitHub repo by Thursday, October 07 at 11:59pm \\
+\par\end{center}
+
+\section{Linear Algebra Review}
+
+Recall that the SVD of $\X \in \real^{n \times p}
+$ is a matrix decomposition such that $\X = \U \D \V^{\top}$, where $\U = [\uu_1, \dots, \uu_n] \in \real^{n \times n}$, $\V = [\vv_1, \dots, \vv_p] \in \real^{p \times p}$, and $\D = \text{diag}(d_1, \dots, d_{\min\{ n, p\}}) \in \real^{n \times p}$. In addition, $\U$ and $\V$ are orthogonal matrices so that $\U^{\top} \U = \U \U^{\top} = \I$ and $\V^{\top} \V = \V \V^{\top} = \I$ (i.e., $\uu_j^{\top} \uu_i = \vv_j^{\top} \vv_i = 0$ for all $i \neq j$ and $\uu_j^{\top} \uu_j = \vv_j^{\top} \vv_j = 1$ for all $i$). Moreover, $d_1 \geq \dots \geq d_{\min\{ n, p\}} \geq 0$.
+
+\vspace{2mm}
+
+Now, while the SVD can be used for any rectangular matrix, square matrices have an additional special property and can be decomposed via an eigendecomposition. Given a square matrix $\A \in \real^{p \times p}$, we say that $\vv \in \real^p$ is an \textit{eigenvector} of $\A$ if $\vv \neq \mathbf{0}$ and $\A \vv = \lambda \vv$ for some $\lambda \in \real$. We also call $\lambda$ the \textit{eigenvalue} of $\A$ corresponding to the eigenvector $\vv$. For a more intuitive (geometric) interpretation of eigenvalues and eigenvectors, see this \href{https://www.khanacademy.org/math/linear-algebra/alternate-bases/eigen-everything/v/linear-algebra-introduction-to-eigenvalues-and-eigenvectors}{reference}.
+
+\vspace{2mm}
+
+There is a close connection between the SVD and eigendecomposition. Namely, for any matrix $\X \in \real^{n \times p}$, $\vv \in \real^{p}$ is a right singular vector of $\X$ with singular value $d$ if and only if $\vv \in \real^{p}$ is an eigenvector of $\X^{\top} \X$ corresponding to the eigenvalue $d^2$. You may use this fact without proof.
+
+\section{Principal Components Analysis and SVD}
+
+Let $\X$ be an $n \times p$ data matrix, where $n$ is the number of observations and $p$ is the number of features. For simplicity, we will assume that $\X$ has been mean-centered (i.e., each column of $X$ has mean $0$) and that $n \leq p$.  In the lab section, we used projections in order to introduce the population version of PCA as solving for each $j = 1, \dots, p$
+\begin{align} \label{eq:pca_pop}
+\vv_j^* = \argmax_{\vv \in \real^p} \vv^{\top} \Var(\X) \vv \qquad \text{subject to} \quad \norm{\vv}_2^2 = 1, \:\:\: \vv^{\top} \vv_i^* = 0 \:\: \forall \: i < j.
+\end{align}
+
+However, since $\Var(\X)$ is almost always unknown in practice, we typically estimate $\Var(\X)$ with the sample covariance $\frac{1}{n} \X^{\top} \X$. Thus, in practice, the principal component (PC) directions, $\hat{\vv}_1, \dots, \hat{\vv}_p$, are the solution to the following system of optimization problems:
+\begin{align} \label{eq:pca}
+\hat{\vv}_j = \argmax_{\vv \in \real^p} \vv^{\top} \X^{\top} \X \vv \qquad \text{subject to} \quad \norm{\vv}_2^2 = 1, \:\:\: \vv^{\top} \hat{\vv}_i = 0 \:\: \: \forall \: i < j.
+\end{align}
+
+In this problem, we will take small steps through the proof to show that the PC directions are precisely the right singular vectors of $\X$. 
+
+\begin{enumerate}
+\item To begin, prove that the first PC direction $\hat{\vv}_1$ is equal to the first right singular vector $\vv_1$. To show this, use \href{https://en.wikipedia.org/wiki/Lagrange_multiplier}{Lagrange multipliers} to solve the PC1 optimization problem:
+\begin{align}
+\hat{\vv}_1 = \argmax_{\vv \in \real^p} \vv^{\top} \X^{\top} \X \vv \qquad \text{subject to} \quad \norm{\vv}_2^2 = 1.
+\end{align}
+If you are not familiar with matrix calculus, \href{https://en.wikipedia.org/wiki/Matrix_calculus}{Wikipedia} is a convenient resource for common derivative identities, which you may find useful here.
+
+\item Next, let $j \in \{2, \dots, p \}$ be given. Use the SVD and matrix multiplication to show that for all $\vv \in \real^p$ satisfying $\vv^{\top} \vv_i = 0$ for each $i < j$, we have
+\begin{align}
+\vv^{\top} \X^{\top} \X \vv = \sum_{k = j}^{p} \vv^{\top} \left( d_k^2 \vv_k \vv_k^{\top} \right) \vv,
+\end{align}
+where we define $d_k = 0$ for $k = n+1, \dots, p$.
+
+\item Then, show that for each $j = 2, \dots, p$, the original (sample) PCA formulation in \eqref{eq:pca} is equivalent to 
+\begin{align}
+\hat{\vv}_j = \argmax_{\vv \in \real^p} \vv^{\top} \left( \X_{(j)}^{\top} \X_{(j)} \right) \vv \qquad \text{subject to} \quad \norm{\vv}_2^2 = 1,
+\end{align}
+where $\X_{(j)} = \widetilde{\U} \widetilde{\D} \widetilde{\V}^{\top}$, $\widetilde{\U} = [\uu_j, \dots, \uu_n, \uu_1, \dots, \uu_{j-1}] \in \real^{n \times n}$, $\widetilde{\D} = \text{diag}(d_j, \dots, d_n, 0, \dots, 0) \in \real^{n \times p}$, and $\widetilde{\V} = [\vv_j, \dots, \vv_p, \vv_1, \dots, \vv_{j-1}] \in \real^{p \times p}$.
+
+\item Conclude that for each $j = 1, \dots, p$, the $j^{th}$ PC direction, $\hat{\vv}_j$, is equal to the $j^{th}$ right singular vector $\vv_j$. (Hint: Problem 1 may be useful).
+
+\end{enumerate}
+
+\iffalse
+\section{Multivariate Statistics}
+
+Suppose that $\x_1, \dots, \x_n$ are n i.i.d. samples from a p-variate normal distribution with known mean $\mathbf{0}$ and unknown covariance $\Sig$, i.e., for each $i = 1, \dots, n$,
+\begin{align*}
+\x_i \stackrel{i.i.d.}{\sim} \mathcal{N}(\mathbf{0}, \Sig).
+\end{align*}
+
+Show that the maximum likelihood estimate of $\Sig$ is given by 
+\begin{align*}
+\hat{\Sig} = \frac{1}{n} \X^{\top} \X,
+\end{align*}
+where
+\begin{align*}
+\X = \begin{pmatrix}
+\x_1^{\top} \\
+\vdots \\
+\x_n^{\top}
+\end{pmatrix}
+\in \real^{n \times p}
+\end{align*}
+
+\textit{Here are some suggested steps to get you started:
+\begin{enumerate}
+\item Write down the (joint) likelihood for this problem.
+\item Calculate the log-likelihood (dropping constant terms as appropriate).
+\item Take the gradient of the log-likelihood to get the score equations. Here, it may be easier to parameterize the problem in terms of the precision (inverse covariance) matrix $\Thet = \Sig^{-1}$ and to take the gradient of the log-likelihood with respect to $\Thet$ (instead of $\Sig$).
+\item Set the score equations equal to $\mathbf{0}$ and solve for the maximum likelihood estimate $\hat{\Sig}$.
+\end{enumerate}
+}
+
+\textit{Remark:} Notice that the maximum likelihood estimator $\hat{\Sig}$ under the multivariate normal assumption is precisely the same covariance estimator that we are maximizing in PCA in \eqref{eq:pca}. This is why PCA is optimal and works fantastic with Gaussian data.
+\fi
+
+
+
+
+\section{Ordinary Least Squares}
+
+Suppose that we observe our usual data matrix $\X \in \real^{n \times p}$ and response vector $\y \in \real^n$, where $n$ is the number of samples/observations and $p$ is the number of features. Suppose also that $\X$ has rank $p < n$. Under this setting, the ordinary least squares (OLS) estimator is given by
+
+\begin{align*}
+\hat{\bbeta}_{OLS} = \argmin_{\bbeta} \norm{\y - \X \bbeta}_2^2.
+\end{align*}
+
+\begin{enumerate}
+\item Provide an expression for $\hat{\bbeta}_{OLS}$ in terms of $\X$ and $\y$ by solving the optimization problem above. Why do we require the assumption that $\text{rank}(\X) = p < n$?
+\item Show that the OLS predictions $\hat{\y} = \X \hat{\bbeta}_{OLS}$ can be written as $\hat{\y} = \HH \y$, where $\HH^2 = \HH$.
+%\item How can we interpret $\HH$ using projections?
+\item Prove that the residuals $\hat{\rr} = \y - \hat{\y}$ are orthogonal to the OLS predictions $\hat{\y}$. Draw a picture to show what this means geometrically.
+\end{enumerate}
+
+\end{document}
+
