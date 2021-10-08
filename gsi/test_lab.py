@@ -6,9 +6,12 @@ import argparse
 import logging
 import time
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
-from .utils import gsi_dir, clone_repo, get_lab_repos, get_last_edit, DEADLINES, get_repo
+from .utils import gsi_dir, clone_repo, get_lab_repos, get_last_edit, DEADLINES, get_repo, is_local, \
+    calculate_lab1_final_grade, report_grades
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,6 +20,7 @@ def _get_args():
     parser = argparse.ArgumentParser(description='Testing 215A labs')
     parser.add_argument('lab_number', type=int, help='lab number to test')
     parser.add_argument('--code', action="store_true", help='if true we test code')
+    parser.add_argument('--grade', action="store_true", help='if true we grade')
 
     args = parser.parse_args()
     return args
@@ -92,15 +96,43 @@ def main():
     args = _get_args()
     lab_number = args.lab_number
     test_code = args.code
+    grade = args.grade
+
+    grades = {}
+
     report = {}
     repos = get_lab_repos(lab_number)
+    report_fname = os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv")
     for student in repos:
-        LOGGER.info(student)
-        if test_code:
-            report[student] = test_lab(student, lab_number)
-            pd.DataFrame(report).to_csv(os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv"), index=[0])
+        if grade:
+            grades[student] = calculate_lab1_final_grade(student)
+        elif test_code:
+            if not is_local or True:
+                report[student] = test_lab(student, lab_number)
+                pd.DataFrame(report).to_csv(report_fname, index=[0])
+
+            else:
+                report = pd.read_csv(report_fname, index_col=0)
+                has_passed = report.loc[:, student].test
+                if not has_passed:
+                    test_result = test_lab(student, lab_number)
+                    report.loc["test", student] = test_result['test']
+                    report.to_csv(report_fname)
         else:
             get_student_lab(student, lab_number)
+    if grade:
+        grades = pd.DataFrame(grades)
+        grades.to_csv(os.path.join(gsi_dir, "data", "labs", "lab1", "grades_final.csv"))
+        final_grades = np.array(grades.loc["Final",:].values).astype(np.float)
+        final_grades = final_grades[np.invert(np.isnan(final_grades))]
+        plt.hist(final_grades)
+        plt.title("Lab 1 Final Grades")
+        plt.xlabel("Grade (Out of 70)")
+        plt.savefig(os.path.join(gsi_dir, "data", "labs", "lab1", "grades_final.png"))
+        for s in repos:
+            if s != "jeremy-goldwasser":
+                continue
+            report_grades(s)
 
 
 if __name__ == '__main__':
