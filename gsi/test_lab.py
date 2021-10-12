@@ -69,7 +69,7 @@ def _get_peer_review(git_user, lab_number):
     reports = []
     for i, r in enumerate(user_reviewers):
         with tempfile.TemporaryDirectory() as d:
-            _ = get_repo(r_1, d)
+            _ = get_repo(r, d)
             peer_review_file = os.path.join(d, f"lab{lab_number}/peer_review/student_{i}/report.csv")
             if os.path.isfile(peer_review_file):
                 with open(peer_review_file, encoding="utf8", errors='ignore') as f:
@@ -130,8 +130,8 @@ def main():
         plt.xlabel("Grade (Out of 70)")
         plt.savefig(os.path.join(gsi_dir, "data", "labs", "lab1", "grades_final.png"))
         for s in repos:
-            if s != "jeremy-goldwasser":
-                continue
+            # if s not in ["xinzhou97", "aashen12", "ishaans99"]:
+            #     continue
             report_grades(s)
 
 
