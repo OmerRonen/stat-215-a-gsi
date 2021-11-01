@@ -85,9 +85,14 @@ def get_student_lab(git_user, lab_number):
         os.mkdir(user_path)
     with tempfile.TemporaryDirectory() as d:
         _ = get_repo(git_user=git_user, d=d)
+        lab_dir =  os.path.join(d, f"lab{lab_number}")
 
-        report_file = os.path.join(d, f"lab{lab_number}/lab{lab_number}.pdf")
-        shutil.copyfile(report_file, os.path.join(user_path, f"lab{lab_number}.pdf"))
+        pdfs = [os.path.join(lab_dir, file) for file in os.listdir(lab_dir) if file.lower().endswith(".pdf")]
+
+        # report_file = os.path.join(d, f"lab{lab_number}/lab{lab_number}.pdf")
+        for pdf in pdfs:
+            target_file = os.path.join(user_path, pdf.split("/")[-1])
+            shutil.copyfile(pdf, target_file)
     peer_review = _get_peer_review(git_user, lab_number)
     peer_review.to_csv(os.path.join(user_path, "peer_review.csv"))
 
@@ -130,8 +135,6 @@ def main():
         plt.xlabel("Grade (Out of 70)")
         plt.savefig(os.path.join(gsi_dir, "data", "labs", "lab1", "grades_final.png"))
         for s in repos:
-            # if s not in ["xinzhou97", "aashen12", "ishaans99"]:
-            #     continue
             report_grades(s)
 
 
