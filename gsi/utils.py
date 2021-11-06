@@ -64,6 +64,7 @@ def get_lab_repos(lab_number):
     active_repos = []
 
     for r in REPOS:
+        print(r)
         with tempfile.TemporaryDirectory() as d:
             clone_repo(r, d)
             lab_1_f = os.path.join(d, f"lab{lab_number}")
