@@ -22,7 +22,7 @@ REPOS = [r.split("\n")[0] for r in open(os.path.join(gsi_dir, "data/repos"), "r"
 Deadlines = namedtuple("Deadlines", "lab1 pr_lab1 lab2")
 DEADLINES = Deadlines(lab1=time.strptime("17 Sep 21 00", "%d %b %y %H"),
                       pr_lab1=time.strptime("27 Sep 21 00", "%d %b %y %H"),
-                      lab2=time.strptime("17 Sep 21 00", "%d %b %y %H"))
+                      lab2=time.strptime("08 Oct 21 00", "%d %b %y %H"))
 
 
 def clone_repo(git_user, local_directory):
