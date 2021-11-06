@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import gsi_dir, clone_repo, get_lab_repos, get_last_edit, DEADLINES, get_repo, is_local, \
-    calculate_lab1_final_grade, report_grades
+    calculate_lab1_final_grade, report_grades, calculate_final_grade
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ def test_lab(git_user, lab_number):
     with tempfile.TemporaryDirectory(suffix=f"_{git_user}") as d:
         LOGGER.info(f"Testing {git_user}")
         submission_time = get_last_edit(git_user, f"lab{lab_number}/lab{lab_number}.pdf")
-        on_time = time.localtime(submission_time) < DEADLINES.lab1
+        on_time = time.localtime(submission_time) < getattr(DEADLINES, f"lab{lab_number}")
         clone_repo(git_user, d)
         LOGGER.info(f"files are {os.listdir(d)}")
         lab_dir = os.path.join(d, f"lab{lab_number}")
@@ -110,9 +110,9 @@ def main():
     report_fname = os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv")
     for student in repos:
         if grade:
-            grades[student] = calculate_lab1_final_grade(student)
+            grades[student] = calculate_final_grade(student, lab_number)
         elif test_code:
-            if not is_local or True:
+            if not is_local:
                 report[student] = test_lab(student, lab_number)
                 pd.DataFrame(report).to_csv(report_fname, index=[0])
 
@@ -127,13 +127,16 @@ def main():
             get_student_lab(student, lab_number)
     if grade:
         grades = pd.DataFrame(grades)
-        grades.to_csv(os.path.join(gsi_dir, "data", "labs", "lab1", "grades_final.csv"))
+        lab_dir = os.path.join(gsi_dir, "data", "labs", f"lab{lab_number}")
+        if not os.path.exists(lab_dir):
+            os.mkdir(lab_dir)
+        grades.to_csv(os.path.join(lab_dir, "grades_final.csv"))
         final_grades = np.array(grades.loc["Final",:].values).astype(np.float)
         final_grades = final_grades[np.invert(np.isnan(final_grades))]
         plt.hist(final_grades)
-        plt.title("Lab 1 Final Grades")
+        plt.title(f"Lab {lab_number} Final Grades")
         plt.xlabel("Grade (Out of 70)")
-        plt.savefig(os.path.join(gsi_dir, "data", "labs", "lab1", "grades_final.png"))
+        plt.savefig(os.path.join(lab_dir, "grades_final.png"))
         for s in repos:
             report_grades(s)
 
