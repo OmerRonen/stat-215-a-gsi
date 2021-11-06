@@ -109,6 +109,7 @@ def main():
     repos = get_lab_repos(lab_number)
     report_fname = os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv")
     for student in repos:
+        LOGGER.info(f"Student: {student}")
         if grade:
             grades[student] = calculate_final_grade(student, lab_number)
         elif test_code:
