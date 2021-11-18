@@ -19,10 +19,11 @@ gsi_dir = gsi_dir_local if is_local else gsi_dir_scf
 git_at = open(os.path.join(gsi_dir, "gsi", ".git_at")).readlines()[0].split("\n")[0]
 
 REPOS = [r.split("\n")[0] for r in open(os.path.join(gsi_dir, "data/repos"), "r").readlines()]
-Deadlines = namedtuple("Deadlines", "lab1 pr_lab1 lab2")
+Deadlines = namedtuple("Deadlines", "lab1 pr_lab1 lab2 lab3")
 DEADLINES = Deadlines(lab1=time.strptime("17 Sep 21 00", "%d %b %y %H"),
                       pr_lab1=time.strptime("27 Sep 21 00", "%d %b %y %H"),
-                      lab2=time.strptime("08 Oct 21 00", "%d %b %y %H"))
+                      lab2=time.strptime("08 Oct 21 00", "%d %b %y %H"),
+                      lab3=time.strptime("27 Oct 21 00", "%d %b %y %H"))
 
 
 def clone_repo(git_user, local_directory):
