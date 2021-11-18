@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from .utils import gsi_dir, clone_repo, get_lab_repos, get_last_edit, DEADLINES, get_repo, is_local, \
-    calculate_lab1_final_grade, report_grades, calculate_final_grade
+from .utils import (gsi_dir, clone_repo, get_lab_repos, get_last_edit,
+                    DEADLINES, get_repo, is_local, report_grades, calculate_final_grade)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -58,6 +58,8 @@ def test_lab(git_user, lab_number):
 
 
 def _get_peer_review(git_user, lab_number):
+    if lab_number > 2:
+        return
     data = pd.read_csv(os.path.join(gsi_dir, "gsi", f"pr_lab{lab_number}.csv"), index_col=0)
     reviewers = data.iloc[:, 0]
     r_1 = reviewers[data.iloc[:, 1] == git_user].iloc[0]
@@ -93,6 +95,21 @@ def get_student_lab(git_user, lab_number):
         for pdf in pdfs:
             target_file = os.path.join(user_path, pdf.split("/")[-1])
             shutil.copyfile(pdf, target_file)
+
+        if lab_number == 3:
+            user_r_path = os.path.join(user_path, "R")
+            if not os.path.exists(user_r_path):
+                os.mkdir(user_r_path)
+
+            r_files = [os.path.join(lab_dir, "R", f) for f in os.listdir(os.path.join(lab_dir, "R"))]
+            for r in r_files:
+                target_file = os.path.join(user_r_path, r.split("/")[-1])
+                try:
+                    shutil.copyfile(r, target_file)
+                except Exception:
+                    pass
+
+        return
     peer_review = _get_peer_review(git_user, lab_number)
     peer_review.to_csv(os.path.join(user_path, "peer_review.csv"))
 
@@ -139,7 +156,7 @@ def main():
         plt.xlabel("Grade (Out of 70)")
         plt.savefig(os.path.join(lab_dir, "grades_final.png"))
         for s in repos:
-            report_grades(s)
+            report_grades(s, lab_number)
 
 
 if __name__ == '__main__':
