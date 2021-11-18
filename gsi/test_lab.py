@@ -145,6 +145,7 @@ def main():
             get_student_lab(student, lab_number)
     if grade:
         grades = pd.DataFrame(grades)
+        LOGGER.info(grades.loc[:, "Final"])
         lab_dir = os.path.join(gsi_dir, "data", "labs", f"lab{lab_number}")
         if not os.path.exists(lab_dir):
             os.mkdir(lab_dir)
