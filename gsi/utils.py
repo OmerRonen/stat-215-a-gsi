@@ -93,7 +93,7 @@ def calculate_final_grade(git_user, lab_number):
     elif lab_number == 2:
         return calculate_lab2_final_grade(git_user)
     elif lab_number == 3:
-        return calculate_lab1_final_grade(git_user)
+        return calculate_lab3_final_grade(git_user)
 
 
 def calculate_lab2_final_grade(git_user):

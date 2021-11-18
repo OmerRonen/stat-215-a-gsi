@@ -21,6 +21,7 @@ def _get_args():
     parser.add_argument('lab_number', type=int, help='lab number to test')
     parser.add_argument('--code', action="store_true", help='if true we test code')
     parser.add_argument('--grade', action="store_true", help='if true we grade')
+    parser.add_argument('--push', action="store_true", help='if true we push')
 
     args = parser.parse_args()
     return args
@@ -119,6 +120,7 @@ def main():
     lab_number = args.lab_number
     test_code = args.code
     grade = args.grade
+    push = args.push
 
     grades = {}
 
@@ -126,7 +128,7 @@ def main():
     repos = get_lab_repos(lab_number)
     report_fname = os.path.join(gsi_dir, "gsi", f"lab{lab_number}_report.csv")
     for student in repos:
-        LOGGER.info(f"Student: {student}")
+        # LOGGER.info(f"Student: {student}")
         if grade:
             grades[student] = calculate_final_grade(student, lab_number)
         elif test_code:
@@ -145,7 +147,7 @@ def main():
             get_student_lab(student, lab_number)
     if grade:
         grades = pd.DataFrame(grades)
-        LOGGER.info(grades.loc[:, "Final"])
+        LOGGER.info(f'Grades:\n{grades.loc["Final", :]}')
         lab_dir = os.path.join(gsi_dir, "data", "labs", f"lab{lab_number}")
         if not os.path.exists(lab_dir):
             os.mkdir(lab_dir)
@@ -156,8 +158,9 @@ def main():
         plt.title(f"Lab {lab_number} Final Grades")
         plt.xlabel("Grade (Out of 70)")
         plt.savefig(os.path.join(lab_dir, "grades_final.png"))
-        for s in repos:
-            report_grades(s, lab_number)
+        if push:
+            for s in repos:
+                report_grades(s, lab_number)
 
 
 if __name__ == '__main__':
