@@ -92,6 +92,8 @@ def calculate_final_grade(git_user, lab_number):
         return calculate_lab1_final_grade(git_user)
     elif lab_number == 2:
         return calculate_lab2_final_grade(git_user)
+    elif lab_number == 3:
+        return calculate_lab1_final_grade(git_user)
 
 
 def calculate_lab2_final_grade(git_user):
@@ -111,8 +113,8 @@ def calculate_lab2_final_grade(git_user):
 
     hw_grade = 10
     # hw_comments = hw_user.iloc[4]
-    on_time = report_user.iloc[1,0]
-    grade['Code (10)'] = 10 * report_user.iloc[0,0]
+    on_time = report_user.iloc[1, 0]
+    grade['Code (10)'] = 10 * report_user.iloc[0, 0]
     grade['Homework (10)'] = hw_grade
     grade["Submitted on Time"] = on_time
 
@@ -123,9 +125,9 @@ def calculate_lab2_final_grade(git_user):
     grade['1.1.5 (10)'] = 2 * feedback_user[5]
     grade['1.1.6 (10)'] = 2 * feedback_user[6]
     grade['comments'] = feedback_user[7]
-    grade['Final'] = grade['Code (10)'] + grade['Homework (10)']+\
-                     grade['1.1.2 (10)'] +grade['1.1.3 (10)'] +\
-                     grade['1.1.4 (10)'] +grade['1.1.5 (10)'] +\
+    grade['Final'] = grade['Code (10)'] + grade['Homework (10)'] + \
+                     grade['1.1.2 (10)'] + grade['1.1.3 (10)'] + \
+                     grade['1.1.4 (10)'] + grade['1.1.5 (10)'] + \
                      grade['1.1.6 (10)']
 
     # grade["Submitted on Time"] = on_time
@@ -181,6 +183,41 @@ def calculate_lab1_final_grade(git_user):
     part1_grade = grade['Reality Check (10)'] + grade['EDA (10)']
     part2_grade = grade['Stability (10)'] + grade['Findings (10)'] + grade['Critique (10)']
     grade['Final'] = part1_grade + part2_grade + hw_grade - 1 * (1 - on_time) + grade['Code (10)']
+
+    return grade
+
+
+def calculate_lab3_final_grade(git_user):
+    grade = {}
+
+    report = pd.read_csv(os.path.join(gsi_dir, "data", "labs", "lab3", "report.csv"), index_col=0)
+    # hw = pd.read_csv(os.path.join(gsi_dir, "data", "labs", "lab1", "hw.csv"), index_col=0)
+    feedback = pd.read_csv(os.path.join(gsi_dir, "data", "labs", "lab3", "feedback.csv"), index_col=0)
+    try:
+        # report_user = _get_student_data(git_user, report)
+        feedback_user = _get_student_data(git_user, feedback)
+        # part1_user = _get_student_data(git_user, part1)
+
+    except IndexError:
+        return
+    report_user = report.iloc[:, report.columns == git_user]
+
+    hw_grade = 10
+    # hw_comments = hw_user.iloc[4]
+    on_time = report_user.iloc[1, 0]
+    grade['Code (10)'] = 10 * report_user.iloc[0, 0]
+    grade['Homework (10)'] = hw_grade * (feedback_user[3] == "Submitted")
+    grade["Submitted on Time"] = on_time
+
+    grade['Code efficiency (10)'] = 2 * feedback_user[1]
+    # grade['hw comments'] = hw_comments
+    grade['Code readability (10)'] = 2 * feedback_user[2]
+    grade['Replication of Benhur (10)'] = 2 * feedback_user[4]
+    grade['Discussion of benhur (10)'] = 2 * feedback_user[5]
+    grade['comments'] = feedback_user[6]
+    grade['Final'] = grade['Code (10)'] + grade['Homework (10)'] + \
+                     grade["Code readability (10)"] + grade['Replication of Benhur (10)'] + \
+                     grade['Discussion of benhur (10)'] + grade['Code efficiency (10)']
 
     return grade
 
